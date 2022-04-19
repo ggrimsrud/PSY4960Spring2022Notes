@@ -1,0 +1,257 @@
+---
+title: "Project_Analyses_Results_041422"
+author: "Gracie Grimsrud"
+date: "4/14/2022"
+output: html_document
+---
+
+Loading Data
+```{r}
+getwd()
+psychData <- read.csv("~/Documents/Psych_Stats/Psych_Proj_Data - Sheet1.csv")
+```
+
+Loading necessary packages
+```{r}
+library(tidyr)
+library(tidyverse)
+library(ggplot2)
+library(modeest)
+```
+
+Data cleaning
+```{r}
+colnames(psychData)
+colnames(psychData)[1] <- "participant"
+
+# Exploring data class
+class(psychData$participant)
+  # This is an integer
+class(psychData$group)
+  # This is an integer, but will need to be used as a factor for some analyses
+class(psychData$age)
+  # This is an integer
+class(psychData$Neg_Urg)
+  # This is an integer
+class(psychData$Pos_Urg)
+  # This is an integer
+class(psychData$Lack_Premed)
+  # This is an integer
+class(psychData$Lack_Perseverance)
+  # This is an integer
+class(psychData$Sensation_Seek)
+  # This is an integer
+class(psychData$PCLTotal)
+  # This is numeric
+class(psychData$PCL_I)
+  # This is an integer, should be changed to numeric to match other facet scores
+    psychData$PCL_I<- as.numeric(psychData$PCL_I)
+    #check
+    class(psychData$PCL_I)
+class(psychData$PCL_II)
+  # This is numeric
+class(psychData$PCL_F1)
+  # This is an integer, should be changed to numeric to match other facet scores
+    psychData$PCL_F1<- as.numeric(psychData$PCL_F1)
+    #check
+    class(psychData$PCL_F1)
+class(psychData$PCL_F2)
+  # This is an integer, should be changed to numeric to match other facet scores
+    psychData$PCL_F2<-  as.numeric(psychData$PCL_F2)
+    #check
+    class(psychData$PCL_F2)
+class(psychData$PCL_F3)
+  # This is numeric
+class(psychData$PCL_F4)
+  # This is numeric
+```
+
+Hypothesis #1: 
+```{r}
+#Hypothesis #1  
+#If participants score high on both facets of Factor I on the PCL (Facet 1: interpersonal and Facet 2: affective traits), then they will also score high on sensation-seeking measures. 
+
+#Ensuring that Facet 1 and Facet 2 are correlated
+cor.test(psychData$PCL_F1, psychData$PCL_F2)
+
+#Testing if there is a correlative relationship between sensation seeking scores and interpersonal traits
+cor.test(psychData$Sensation_Seek, psychData$PCL_F1)
+#Testing if there is a correlative relationship between sensation seeking scores and affective traits
+cor.test(psychData$Sensation_Seek, psychData$PCL_F2)
+#Testing if there is a correlative relationship between Factor 1 and sensation seeking scores
+cor.test(psychData$Sensation_Seek, psychData$PCL_I)
+
+```
+
+Hypothesis #1 Visualizations
+```{r}
+figure1<- ggplot(psychData, aes(PCL_F1, PCL_F2, color = Sensation_Seek)) +geom_point(size = 3) +theme_light()+ggtitle("Figure 1 \nInterpersonal and Affective Traits are Related") +xlab(label = "Interpersonal Traits") + ylab(label = "Affective Traits") + labs(color = "Sensation Seeking") + scale_colour_gradientn(colours = rainbow(2))+geom_smooth(method="lm", se = FALSE, color = "black")
+
+ggplot(psychData, aes(PCL_F1, PCL_F2, color = Sensation_Seek)) +geom_point(size = 3) +theme_light()+ggtitle("Figure 1 \nInterpersonal and Affective Traits are Related") +xlab(label = "Interpersonal Traits") + ylab(label = "Affective Traits") + labs(color = "Sensation Seeking") + scale_colour_gradientn(colours = rainbow(2))+geom_smooth(method="lm", se = FALSE, color = "black")
+
+ggplot(psychData, aes(PCL_F1, Sensation_Seek)) +geom_point() +geom_smooth(method = "lm")
+
+ggplot(psychData, aes(PCL_F2, Sensation_Seek)) +geom_point() +geom_smooth(method = "lm")
+
+figure2<- ggplot(psychData, aes(PCL_I, Sensation_Seek)) +geom_point(color = "#FF3333", size = 3, shape = 8) +theme_light() +ggtitle("Figure 2 \nPCL Factor 1 Scores Not Predictive of Sensation Seeking Scores") +xlab(label = "PCL Factor 1 Scores") + ylab(label = "Sensation Seeking Scores")
+
+ggplot(psychData, aes(PCL_I, Sensation_Seek)) +geom_point(color = "#FF3333", size = 3, shape = 8) +theme_light() +ggtitle("Figure 2 \nPCL Factor 1 Scores Not Predictive of Sensation Seeking Scores") +xlab(label = "PCL Factor 1 Scores") + ylab(label = "Sensation Seeking Scores")+geom_smooth(method="lm", se = FALSE, color = "black")
+```
+
+Hypothesis #2: 
+```{r}
+#Hypothesis #2  
+#If participants score high on both facets of Factor II on the PCL (lifestyle and antisocial traits), then they will also score low on lack of premeditation measures on the UPPS-P. 
+
+#Ensuring that Facet 3 and Facet 4 are correlated
+cor.test(psychData$PCL_F3, psychData$PCL_F4)
+
+#Testing if there is a correlative relationship between lack of premeditation scores and lifestyletraits
+cor.test(psychData$Lack_Premed, psychData$PCL_F3)
+
+#Testing if there is a correlative relationship between lack of premeditation scores and ntisocial traits
+cor.test(psychData$Lack_Premed, psychData$PCL_F4)
+
+#Testing if there is a correlative relationship between Factor 2 and lack of premeditation scores 
+cor.test(psychData$Lack_Premed, psychData$PCL_II)
+
+```
+
+Hypothesis #2 Visualizations
+```{r}
+figure3<- ggplot(psychData, aes(PCL_F3, PCL_F4, color = Lack_Premed)) +geom_point(size = 3)+theme_light() +ggtitle("Figure 3 \nLifestyle and Antisocial Traits are Related") +xlab(label = "Lifestyle Traits") + ylab(label = "Antisocial Traits")+ labs(color = "Lack of Premeditation") + scale_colour_gradientn(colours = rainbow(2))+geom_smooth(method="lm", se = FALSE, color = "black")
+
+ggplot(psychData, aes(PCL_F3, PCL_F4, color = Lack_Premed)) +geom_point()+theme_light() +ggtitle("Figure 3 \nLifestyle and Antisocial Traits are Related") +xlab(label = "Lifestyle Traits") + ylab(label = "Antisocial Traits")+ labs(color = "Lack of Premeditation") + scale_colour_gradientn(colours = rainbow(2))
+
+ggplot(psychData, aes(PCL_F3, Lack_Premed)) +geom_point() +geom_smooth(method = "lm")
+
+ggplot(psychData, aes(PCL_F4, Lack_Premed)) +geom_point() +geom_smooth(method = "lm")
+
+figure4<- ggplot(psychData, aes(PCL_II, Lack_Premed)) +geom_point(color = "#FF3333", size = 3, shape = 8) +geom_smooth(method="lm", se = FALSE, color = "black")+theme_light() +ggtitle("Figure 4 \nPCL Factor 2 Scores Not Predictive of Lack of Premeditation Scores") +xlab(label = "PCL Factor 2 Scores") + ylab(label = "Lack of Premeditation Scores")
+
+ggplot(psychData, aes(PCL_II, Lack_Premed)) +geom_point(color = "#FF3333", size = 3, shape = 8) +geom_smooth(method="lm", se = FALSE, color = "black")+theme_light() +ggtitle("Figure 4 \nPCL Factor 2 Scores Not Predictive of Lack of Premeditation Scores") +xlab(label = "PCL Factor 2 Scores") + ylab(label = "Lack of Premeditation Scores")
+```
+
+Hypothesis #3: 
+```{r}
+#Hypothesis #3  
+#If participants score high overall on the PCL, then they will also score high in positive urgency measures on the UPPS-P. 
+
+#Testing if there is a correlative relationship between total PCL Factor 1 and PCL Factor 2 
+cor.test(psychData$PCL_I, psychData$PCL_II)
+
+#Testing if there is a correlative relationship between total PCL score and positive urgency scores
+cor.test(psychData$PCLTotal, psychData$Pos_Urg)
+
+#Testing if there is a correlative relationship between total PCL Factor I and positive urgency scores
+cor.test(psychData$PCL_I, psychData$Pos_Urg)
+
+#Testing if there is a correlative relationship between total PCL Factor II and positive urgency scores
+cor.test(psychData$PCL_II, psychData$Pos_Urg)
+
+#Testing if there is a correlative relationship between total PCL score and negative urgency scores
+cor.test(psychData$PCLTotal, psychData$Neg_Urg)
+
+#Testing if there is a correlative relationship between total PCL Factor I and negative urgency scores
+cor.test(psychData$PCL_I, psychData$Neg_Urg)
+
+#Testing if there is a correlative relationship between total PCL Factor II and negative urgency scores
+cor.test(psychData$PCL_II, psychData$Neg_Urg)
+```
+
+Hypothesis #3 Visualizations
+```{r}
+ggplot(psychData, aes(PCL_I, PCL_II)) + geom_point() +geom_smooth(method="lm")
+
+figure6<- ggplot(psychData, aes(PCLTotal, Pos_Urg)) + geom_point(color = "#FF3333", size = 3, shape = 8)+ geom_smooth(method="lm", se = FALSE, color = "black") +ggtitle("Figure 6 \nPCL Total Scores Relation to Positive Urgency Measures") +xlab(label = "PCL Total Score") + ylab(label = "Positive Urgency Scores")
+
+ggplot(psychData, aes(PCL_I, Pos_Urg)) + geom_point()
+
+figure5<- ggplot(psychData, aes(PCL_II, Pos_Urg)) + geom_point(color = "#FF3333", size = 3, shape = 8) + geom_smooth(method="lm", se = FALSE, color = "black") +ggtitle("Figure 5 \nPCL Factor 2 Scores Predictive of Positive Urgency Measures") +xlab(label = "PCL Factor 2 Scores") + ylab(label = "Positive Urgency Scores")
+
+ggplot(psychData, aes(PCLTotal, Neg_Urg)) + geom_point()
+
+ggplot(psychData, aes(PCL_I, Neg_Urg)) + geom_point()
+
+ggplot(psychData, aes(PCL_II, Neg_Urg)) + geom_point()
+```
+
+Exploratory Analyses: Do PCL scores differ by groups included in the subject sample (prison subject, patient subject)?
+```{r}
+#Extra analyses
+
+#Do PCL scores differ between groups?
+
+cor.test(psychData$age, psychData$PCLTotal)
+
+cor.test(psychData$group, psychData$PCLTotal)
+
+cor.test(psychData$group, psychData$PCL_I)
+
+cor.test(psychData$group, psychData$PCL_II)
+
+t.test(PCLTotal~as.factor(group), data=psychData, var.equal = TRUE)
+
+t.test(PCL_I~as.factor(group), data=psychData, var.equal = TRUE)
+
+t.test(PCL_II~as.factor(group), data=psychData, var.equal = TRUE)
+
+ggplot(psychData, aes(as.factor(group), PCLTotal))+geom_boxplot(color = "blue", fill = "lightyellow") +theme_light()+xlab(label = "Group \n 0 = Prison Sample \n 1 = Patient Sample") +ylab(label = "Total PCL Score")
+```
+
+Extra analyses visualizations
+```{r}
+#Hypothesis 1:
+ggplot(psychData, aes(PCL_F1, PCL_F2, color = Sensation_Seek)) +geom_point() +geom_smooth(method = "lm")+facet_wrap(~group)
+
+ggplot(psychData, aes(PCL_F1, Sensation_Seek, color = as.factor(group))) +geom_point() +geom_smooth(method = "lm")
+
+ggplot(psychData, aes(PCL_F2, Sensation_Seek, color = as.factor(group))) +geom_point() +geom_smooth(method = "lm")
+
+ggplot(psychData, aes(PCL_I, Sensation_Seek, color = as.factor(group))) +geom_point() +geom_smooth(method = "lm")
+
+#Hypothesis 2:
+ggplot(psychData, aes(PCL_F3, PCL_F4, color = Lack_Premed)) +geom_point() +geom_smooth(method = "lm")
+
+ggplot(psychData, aes(PCL_F3, Lack_Premed, color = as.factor(group))) +geom_point() +geom_smooth(method = "lm")
+
+ggplot(psychData, aes(PCL_F4, Lack_Premed, color = as.factor(group))) +geom_point() +geom_smooth(method = "lm")
+
+ggplot(psychData, aes(PCL_II, Lack_Premed, color = as.factor(group))) +geom_point() +geom_smooth(method = "lm")
+
+#Hypothesis 3:
+ggplot(psychData, aes(PCLTotal, Pos_Urg, color = as.factor(group))) + geom_point()
+
+ggplot(psychData, aes(PCL_I, Pos_Urg, color = as.factor(group))) + geom_point()
+
+ggplot(psychData, aes(PCL_II, Pos_Urg, color = as.factor(group))) + geom_point()
+
+ggplot(psychData, aes(PCLTotal, Neg_Urg, color = as.factor(group))) + geom_point()
+
+ggplot(psychData, aes(PCL_I, Neg_Urg, color = as.factor(group))) + geom_point()
+
+ggplot(psychData, aes(PCL_II, Neg_Urg, color = as.factor(group))) + geom_point()
+```
+
+**Results:**
+
+  The relationship between Facet 1, interpersonal traits, and Facet 2, affective traits, of the Psychopathy Checklist was tested with a Pearson's Correlation test to ensure that they were accurately depicting Factor 1 on the PCL. This test yielded a positive correlation of 0.60 (p < 0.001) (Figure 1). When investigating the relationship between Sensation-Seeking measures and scores on the Psychopathy Check List Factor 1, the data indicated that there were not any relationships between these measures. A Pearson's Product Moment Correlation test yielded a correlation of 0.03 (p = 0.814) (Figure 2). Moreover, the same test was conducted to assess the relationship between Sensation Seeking measures and both Facet 1 and Facet 2. These tests yielded correlations of 0.07 (p = 0.494) and -0.04 (p = 0.741), respectively. 
+```{r}
+figure1
+
+figure2
+```
+  
+  The relationship between Facet 3, lifestyle traits, and Facet 4, antisocial traits, of the Psychopathy Checklist was tested with a Pearson's Correlation test to ensure that they were accurately depicting Factor 2 on the PCL. This test yielded a positive correlation of 0.63 (p < 0.001) (Figure 3). When investigating the relationship between Lack of Premeditation measures and scores on the Psychopathy Check List Factor 2, the data indicated that there were not any relationships between these measures. A Pearson's Product Moment Correlation test yielded a correlation of 0.098 (p = 0.367) (Figure 4). Moreover, the same test was conducted to assess the relationship between Sensation Seeking measures and both Facet 3 and Facet 4. These tests yielded correlations of 0.13 (p = 0.248) and 0.03 (p = 0.814), respectively. 
+  
+```{r}
+figure3
+
+figure4
+```
+  
+  The relationship between Factor 1 and and Factor 2 of the Psychopathy Checklist was tested with a Pearson's Correlation test to identify if performance on each factor was related. This test yielded a positive correlation of 0.48 (p < 0.001). When investigating the relationship between Positive Urgency measures and scores on the Psychopathy Check List Factor 1, the data indicated that there were not any relationships between these measures (r = 0.02, p = 0.84). Additionally, when investigating the relationship between Positive Urgency measures and total score on the Psychopathy Check List, there was not a significant correlation either (r = 0.18, p = 0.09). However, there was a significant positive correlation between Factor 2 on the PCL and Positive Urgency measures (r = 0.28,  p = 0.008), indicating that lifestyle and antisocial traits may be related to displays of positive urgency (Figure 5). 
+  
+```{r}
+figure5
+```
